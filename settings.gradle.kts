@@ -1,0 +1,1 @@
+rootProject.name = "tw.idv.brandy.ktor-arrow"
