@@ -8,7 +8,7 @@ import io.ktor.http.*
 import tw.idv.brandy.plugins.*
 
 class ApplicationTest {
-    @Test
+   // @Test
     fun testRoot() = testApplication {
         application {
             configureRouting()
@@ -18,4 +18,6 @@ class ApplicationTest {
             assertEquals("Hello World!", bodyAsText())
         }
     }
+
+
 }

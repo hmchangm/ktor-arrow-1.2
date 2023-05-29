@@ -5,8 +5,9 @@ val kotlin_version: String by project
 val logback_version: String by project
 
 plugins {
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.8.10"
     id("io.ktor.plugin") version "2.3.0"
+    id("com.google.devtools.ksp") version "1.8.10-1.0.9"
 }
 
 java {
@@ -46,7 +47,8 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.arrow-kt:arrow-core:1.2.0-RC")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
+    implementation("io.arrow-kt:arrow-optics:1.2.0-RC")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-
+    ksp("io.arrow-kt:arrow-optics-ksp-plugin:1.2.0-RC")
 }

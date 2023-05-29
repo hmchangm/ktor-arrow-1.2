@@ -25,9 +25,8 @@ data class Book private constructor(
                             .recover { _ -> raise(EmptyAuthor(it.index)) }
                     }.bindAll()
                     ensureNotNull(validatedAuthors.toNonEmptyListOrNull()) { NoAuthors }
-                },
-                { ensure(title.isNotEmpty()) { EmptyTitle } },
-            ) { _, authorsNel, _ ->
+                }
+            ) { _, authorsNel ->
                 Book(title, authorsNel)
             }
         }
