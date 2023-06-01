@@ -17,6 +17,6 @@ fun Application.configureRouting() {
     }
 
     fun Person.capitalizeCountryModify(): Person =
-        Person.address.city.country.modify(this) { it.capitalize() }
+        Person.address.city.country.modify(this) { it.replaceFirstChar(Char::titlecase) }
 
 }
