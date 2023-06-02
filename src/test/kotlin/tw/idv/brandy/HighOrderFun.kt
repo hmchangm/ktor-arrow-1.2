@@ -7,7 +7,7 @@ import arrow.fx.coroutines.raceN
 import kotlin.test.Test
 
 typealias UserId = String
-data class User(val name: String, val avatar: String)
+data class WebUser(val name: String, val avatar: String)
 class HighOrderFun {
 
     @Test
@@ -44,11 +44,11 @@ class HighOrderFun {
         getUser("brandy")
     }
 
-    suspend fun getUser(id: UserId): User =
+    suspend fun getUser(id: UserId): WebUser =
         parZip(
             { getUserName(id) },
             { getAvatar(id) },
-        ) { name, avatar -> User(name, avatar) }
+        ) { name, avatar -> WebUser(name, avatar) }
 
     fun downloadFrom(x: String): String = TODO()
     suspend fun file(server1: String, server2: String) =

@@ -2,20 +2,21 @@ package tw.idv.brandy.plugins
 
 import arrow.core.*
 import arrow.core.raise.*
-import io.ktor.serialization.jackson.*
 import com.fasterxml.jackson.databind.*
-import io.ktor.server.response.*
-import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
-
 data class Book private constructor(
-    val title: String, val authors: NonEmptyList<Author>
+    val title: String,
+    val authors: NonEmptyList<Author>,
 ) {
     companion object {
         operator fun invoke(
-            title: String, authors: Iterable<String>
+            title: String,
+            authors: Iterable<String>,
         ): Either<NonEmptyList<BookValidationError>, Book> = either<NonEmptyList<BookValidationError>, Book> {
             zipOrAccumulate(
                 { ensure(title.isNotEmpty()) { EmptyTitle } },
@@ -25,7 +26,7 @@ data class Book private constructor(
                             .recover { _ -> raise(EmptyAuthor(it.index)) }
                     }.bindAll()
                     ensureNotNull(validatedAuthors.toNonEmptyListOrNull()) { NoAuthors }
-                }
+                },
             ) { _, authorsNel ->
                 Book(title, authorsNel)
             }
@@ -39,13 +40,10 @@ data class Author private constructor(val name: String) {
             ensure(name.isNotEmpty()) { EmptyTitle }
             Author(name)
         }
-
     }
 }
 
-
 fun Application.bookRoute() {
-
     routing {
         get("/book/good") {
             Book("TSMC", listOf("Morries", "Chang")).let {
@@ -57,7 +55,5 @@ fun Application.bookRoute() {
                 call.respond(it.leftOrNull().toString())
             }
         }
-
     }
 }
-

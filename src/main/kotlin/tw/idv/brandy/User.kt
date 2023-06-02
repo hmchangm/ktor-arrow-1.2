@@ -2,9 +2,8 @@ package tw.idv.brandy
 
 import arrow.core.Either
 import arrow.core.Nel
-import arrow.core.raise.either
-import arrow.core.raise.ensure
-import arrow.core.raise.zipOrAccumulate
+import arrow.core.raise.*
+import arrow.core.toOption
 import arrow.optics.optics
 
 @optics data class User(
@@ -18,7 +17,11 @@ import arrow.optics.optics
             email: String? = null,
             phoneNumber: String,
         ): Either<Nel<BizError>, User> = either {
-            zipOrAccumulate({ Email.of(email).bind() }, { PhoneNumber(phoneNumber).bind() }) { validEmail, validPhone ->
+            zipOrAccumulate(
+                { ensureNotNull(username) { NotValidField("username", username) } },
+                { Email.of2(email).bind() },
+                { PhoneNumber(phoneNumber).bind() },
+            ) { _, validEmail, validPhone ->
                 User(username, validEmail, validPhone)
             }
         }
@@ -35,10 +38,20 @@ value class Email private constructor(val value: String) {
                 ensure(EMAIL_REGEX.matches(it)) { NotValidField("Email", value) }
             }.let { Email(it) }
         }
+
+        fun of2(value: String?): Either<BizError, Email> = either {
+            value.toOption().fold(
+                ifEmpty = { raise(NotValidField("Email", "empty")) },
+                ifSome = {
+                    ensure(EMAIL_REGEX.matches(it)) { NotValidField("Email", value) }
+                    Email(it)
+                },
+            )
+        }
     }
 }
 
-val PHONENUMBER_REGEX = "^(\\+\\d{2})?\\s?(\\d\\s?)+\$".toRegex()
+val PHONENUMBER_REGEX = """^(\+\d{2})?\s?(\d\s?)+$""".toRegex()
 
 @JvmInline
 value class PhoneNumber private constructor(val value: String) {

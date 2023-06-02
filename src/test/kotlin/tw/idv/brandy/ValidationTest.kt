@@ -12,6 +12,13 @@ import kotlin.test.Test
 class ValidationTest {
 
     @Test
+    fun `user valid`() {
+        User.of("Brandy", null, "03242342223").let(::println)
+        User.of("Brandy", "hmchangm@gmail.com", "03242342223").let(::println)
+        User.of("", "hmchangma", "").let(::println)
+    }
+
+    @Test
     fun `book either`() {
         Book("aaaa", listOf("BBB")).let(::println)
         Book("", listOf()).let(::println)
