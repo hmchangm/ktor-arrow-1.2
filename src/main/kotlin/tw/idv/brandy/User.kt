@@ -41,9 +41,9 @@ value class Email private constructor(val value: String) {
 
         fun of2(value: String?): Either<BizError, Email> = either {
             value.toOption().fold(
-                ifEmpty = { raise(NotValidField("Email", "empty")) },
+                ifEmpty = { raise(NotValidField("Email", value)) },
                 ifSome = {
-                    ensure(EMAIL_REGEX.matches(it)) { NotValidField("Email", value) }
+                    ensure(EMAIL_REGEX.matches(it)) { NotValidField("Email", it) }
                     Email(it)
                 },
             )
