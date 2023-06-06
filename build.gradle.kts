@@ -34,9 +34,7 @@ tasks {
             freeCompilerArgs = freeCompilerArgs + "-Xcontext-receivers"
         }
     }
-
 }
-
 
 dependencies {
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktor_version")
@@ -48,7 +46,12 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:1.2.0-RC")
     implementation("io.arrow-kt:arrow-fx-coroutines:1.2.0-RC")
     implementation("io.arrow-kt:arrow-optics:1.2.0-RC")
+    implementation("io.arrow-kt:arrow-optics-reflect:1.2.0-RC")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("io.kotest:kotest-runner-junit5:5.6.2")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:5.6.2")
+    testImplementation("io.kotest:kotest-property-jvm:5.6.2")
+    testImplementation("io.kotest.extensions:kotest-assertions-arrow:1.3.3")
     ksp("io.arrow-kt:arrow-optics-ksp-plugin:1.2.0-RC")
 }

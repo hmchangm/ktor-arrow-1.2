@@ -20,10 +20,10 @@ class ValidationTest {
 
     @Test
     fun `book either`() {
-        Book("aaaa", listOf("BBB")).let(::println)
-        Book("", listOf()).let(::println)
-        Book("aaaa", listOf()).let(::println)
-        Book("aaaa", listOf("", "CCC", "", "GSDD", "")).let(::println)
+        Book.of("aaaa", listOf("BBB")).let(::println)
+        Book.of("", listOf()).let(::println)
+        Book.of("aaaa", listOf()).let(::println)
+        Book.of("aaaa", listOf("", "CCC", "", "GSDD", "")).let(::println)
     }
 
     fun one(): Either<String, Int> = "error-1".left()

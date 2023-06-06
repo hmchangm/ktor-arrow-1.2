@@ -14,7 +14,7 @@ data class Book private constructor(
     val authors: NonEmptyList<Author>,
 ) {
     companion object {
-        operator fun invoke(
+        fun of(
             title: String,
             authors: Iterable<String>,
         ): Either<NonEmptyList<BookValidationError>, Book> = either<NonEmptyList<BookValidationError>, Book> {
@@ -31,6 +31,15 @@ data class Book private constructor(
                 Book(title, authorsNel)
             }
         }
+
+        suspend fun of2(
+            title: String,
+            authors: Iterable<String>,
+        ): Either<BookValidationError, Book> = either<BookValidationError, Book> {
+            ensure(title.isNotEmpty()) { EmptyTitle }
+            ensureNotNull(authors.toNonEmptyListOrNull()) { NoAuthors }
+            Book(title, TODO())
+        }
     }
 }
 
@@ -46,12 +55,12 @@ data class Author private constructor(val name: String) {
 fun Application.bookRoute() {
     routing {
         get("/book/good") {
-            Book("TSMC", listOf("Morries", "Chang")).let {
+            Book.of("TSMC", listOf("Morries", "Chang")).let {
                 call.respond(it)
             }
         }
         get("/book/bad") {
-            Book("", listOf("Morries", "", "hgjkg", "")).let {
+            Book.of("", listOf("Morries", "", "hgjkg", "")).let {
                 call.respond(it.leftOrNull().toString())
             }
         }
