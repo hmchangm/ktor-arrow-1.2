@@ -2,12 +2,14 @@ package tw.idv.brandy.plugins
 
 import arrow.core.*
 import arrow.core.raise.*
-import com.fasterxml.jackson.databind.*
-import io.ktor.serialization.jackson.*
+import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.runBlocking
+import tw.idv.brandy.*
+import tw.idv.brandy.repo.Mailer
+import tw.idv.brandy.repo.UserRepo
 
 data class Book private constructor(
     val title: String,
@@ -64,5 +66,67 @@ fun Application.bookRoute() {
                 call.respond(it.leftOrNull().toString())
             }
         }
+
+        get("/user/sendAndMail") {
+            runBlocking {
+                User.of("Brandy", "aabbdd@mail.com", "031142")
+                    .mapLeft { formValidToEither(it) }
+                    .flatMap { UserRepo.save(it) }
+                    .tap { println(it) }.onRight { }
+                    .flatMap { Mailer.mail(it) }
+                    .fold(
+                        ifRight = { call.respond(it) },
+                        ifLeft = { call.respond(HttpStatusCode.InternalServerError, it) },
+                    )
+            }
+
+            runBlocking {
+                either {
+                    val brandy = User.of("Brandy", "aabbdd@mail.com", "0311332")
+                        .mapLeft { FormValidError(it) }.bind()
+                    println(brandy)
+                    UserRepo.save(brandy).bind()
+                    Mailer.mail(brandy).bind()
+                }.fold(
+                    ifRight = { with(call) { respondBase(it) } },
+                    ifLeft = { with(call) { respondError(it) } },
+                )
+            }
+        }
     }
 }
+
+fun formValidToEither(it: NonEmptyList<BizError>) = FormValidError(it)
+
+context (ApplicationCall)
+suspend fun respondError(it: BizError) {
+    when (it) {
+        is DatabaseError -> {
+            respond(HttpStatusCode.InternalServerError, "Database problem ${it.e.message}")
+        }
+        is MailError -> {
+            respond(HttpStatusCode.InternalServerError, "Cannot send mail for ${it.email}")
+        }
+
+        is FormValidError -> TODO()
+        is NotValidField -> TODO()
+    }
+}
+
+context (ApplicationCall)
+suspend fun respondBase(it: Any) {
+    respond(it)
+}
+
+context (Raise<Nel<BizError>>)
+suspend fun arrow2Style() {
+    val brandy = User.of2("Brandy", "aabbdd@mail.com", "031142253")
+    println(brandy)
+    save(brandy)
+    mail(brandy)
+}
+
+context (Raise<Nel<BizError>>)
+suspend fun save(user: User): User = TODO()
+context (Raise<Nel<BizError>>)
+suspend fun mail(user: User): User = TODO()

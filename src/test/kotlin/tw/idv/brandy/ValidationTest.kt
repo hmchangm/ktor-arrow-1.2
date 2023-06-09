@@ -13,9 +13,16 @@ class ValidationTest {
 
     @Test
     fun `user valid`() {
-        User.of("Brandy", null, "03242342223").let(::println)
+        User.of("Brandy", "null", "03242342223").let(::println)
         User.of("Brandy", "hmchangm@gmail.com", "03242342223").let(::println)
         User.of("", "hmchangma", "").let(::println)
+    }
+
+    @Test
+    fun `User Fail fast`() {
+        User.of1("Brandy", "", "03242342223").let(::println)
+        User.of1("Brandy", "hmchangm@gmail.com", "03242342223").let(::println)
+        User.of1("", "hmchangma", "").let(::println)
     }
 
     @Test
@@ -25,6 +32,9 @@ class ValidationTest {
         Book.of("aaaa", listOf()).let(::println)
         Book.of("aaaa", listOf("", "CCC", "", "GSDD", "")).let(::println)
     }
+
+
+
 
     fun one(): Either<String, Int> = "error-1".left()
     fun two(): Either<NonEmptyList<String>, Int> = nonEmptyListOf("error-2", "error-3").left()

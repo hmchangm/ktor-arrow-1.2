@@ -13,36 +13,35 @@ data class User(
     val phoneNumber: PhoneNumber,
 ) {
     companion object {
-        fun of(username: String, email: String, phoneNumber: String): Either<NonEmptyList<BizError>, User> =
+        suspend fun of(username: String?, email: String, phoneNumber: String): Either<NonEmptyList<BizError>, User> =
             either {
                 zipOrAccumulate(
                     { ensureNotNull(username) { NotValidField("username", username) } },
                     { Email(email).bind() },
                     { PhoneNumber(phoneNumber).bind() },
-                ) { _, validEmail, validPhone ->
-                    User(username, validEmail, validPhone)
+                ) { name, validEmail, validPhone ->
+                    User(name, validEmail, validPhone)
                 }
             }
 
-        fun of1(username: String, email: String, phoneNumber: String): Either<BizError, User> =
+        fun of1(username: String?, email: String, phoneNumber: String): Either<BizError, User> =
             either {
                 ensureNotNull(username) { NotValidField("username", username) }
-                val email = Email(email).bind()
+                val mail = Email(email).bind()
                 val phone = PhoneNumber(phoneNumber).bind()
-                User(username, email, phone)
+                User(username, mail, phone)
+            }
+
+        context(Raise<Nel<BizError>>)
+        fun of2(username: String, email: String? = null, phoneNumber: String): User =
+            zipOrAccumulate(
+                { ensureNotNull(username) { NotValidField("username", username) } },
+                { Email(email).bind() },
+                { PhoneNumber(phoneNumber).bind() },
+            ) { _, validEmail, validPhone ->
+                User(username, validEmail, validPhone)
             }
     }
-
-    context(Raise<Nel<BizError>>)
-    fun of2(username: String, email: String? = null, phoneNumber: String): User =
-        zipOrAccumulate(
-            { ensureNotNull(username) { NotValidField("username", username) } },
-            { Email(email).bind() },
-            { PhoneNumber(phoneNumber).bind() },
-        ) { _, validEmail, validPhone ->
-            User(username, validEmail, validPhone)
-        }
-}
 }
 
 @JvmInline
