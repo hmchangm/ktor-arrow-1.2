@@ -6,6 +6,7 @@ import arrow.core.left
 import arrow.core.nonEmptyListOf
 import arrow.core.raise.either
 import arrow.core.raise.zipOrAccumulate
+import io.kotest.common.runBlocking
 import tw.idv.brandy.plugins.Book
 import kotlin.test.Test
 
@@ -13,9 +14,11 @@ class ValidationTest {
 
     @Test
     fun `user valid`() {
-        User.of("Brandy", "null", "03242342223").let(::println)
-        User.of("Brandy", "hmchangm@gmail.com", "03242342223").let(::println)
-        User.of("", "hmchangma", "").let(::println)
+        runBlocking {
+            User.of("Brandy", "null", "03242342223").let(::println)
+            User.of("Brandy", "hmchangm@gmail.com", "03242342223").let(::println)
+            User.of("", "hmchangma", "").let(::println)
+        }
     }
 
     @Test
